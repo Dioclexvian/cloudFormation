@@ -1,0 +1,12 @@
+empty:
+    @echo " "
+    
+prod-deploy:
+    aws cloudformation deploy --stack-name CondProd --template-file satck-conditionals.yaml --parameter-overrides KeyPairParameter=keypair-kalilinux-wm VpcIdParameter=vpc-04040c46fa235102c AmiIdParameter=ami-0d7a109bf30624c99 Environment=prod
+prod-delete: 
+    aws cloudformation delete-stack --stack-name CondProd
+
+Staging-deploy:
+    aws cloudformation deploy --stack-name CondStaging --template-file satck-conditionals.yaml --parameter-overrides KeyPairParameter=keypair-kalilinux-wm VpcIdParameter=vpc-04040c46fa235102c AmiIdParameter=ami-0d7a109bf30624c99 Environment=staging
+Staging-delete:  
+    aws cloudformation delete-stack --stack-name CondStaging

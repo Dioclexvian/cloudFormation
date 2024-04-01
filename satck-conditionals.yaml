@@ -1,0 +1,91 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  Este stack va a crear 
+  una instancia de EC2
+  y todo lo que necesita
+Conditions:
+  StagingEvironment: !Equals
+    - !Ref Environment
+    - staging
+  ProdEnvironment: !Equals
+    - !Ref Environment
+    - prod
+
+Parameters:
+  VpcIdParameter:
+    Type: String
+  KeyPairParameter:
+    Type: String
+  AmiIdParameter:
+    Type: String
+  Environment:
+    Type: String
+    AllowedValues:
+      - prod
+      - staging
+  InstanceTypeParameter:
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t3.micro
+      - t3.small
+      - t2.micro
+    Description: El tipo de instancia a crear
+
+Outputs:
+  IdInstancia:
+    Description: Id de la instancia creada
+    Value:
+      Ref: WebService
+
+Resources:
+  WebService:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId:
+        Ref: AmiIdParameter
+      KeyName: 
+        Ref: KeyPairParameter
+      InstanceType: 
+        Ref:  InstanceTypeParameter
+      SecurityGroupIds:
+        - Ref: SecurityGroupSSH
+
+  SecurityGroupSSH:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "security group ssh access stack prueba 01"
+      VpcId:
+        Ref: VpcIdParameter
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIP: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: -1 
+          FromPort: 0
+          ToPort: 0
+          CidrIP: 0.0.0.0/0
+  SecurityGroupIngressStaging:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: StagingEvironment
+    Properties:
+      CidrIp: 1.2.3.4/32
+      Description: Access from internal networks
+      FromPort: -1
+      IpProtocol: -1
+      ToPort: -1
+      GroupID: !Ref SecurityGroupSSH
+  SecurityGroupIngressProd:
+    Type: AWS::EC2::SecurityGroupIngress
+    Condition: ProdEnvironment
+    Properties:
+      CidrIp: 0.0.0.0/0
+      Description: Access from everywhere networks
+      FromPort: -1
+      IpProtocol: -1
+      ToPort: -1
+      GroupID: !Ref SecurityGroupSSH
+
+

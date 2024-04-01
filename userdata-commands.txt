@@ -1,0 +1,17 @@
+empty:
+    @echo " "
+prod-deploy:
+    aws cloudformation deploy --stack-name UserDataProd --template-file stack-UserData.yaml --parameter-overrides KeyPairParameter=keypair-kalilinux-wm VpcIdParameter=vpc-04040c46fa235102c AmiIdParameter=ami-080e1f13689e07408 Environment=prod
+prod-delete: 
+    aws cloudformation delete-stack --stack-name UserDataProd
+
+
+Staging-deploy:
+    aws cloudformation deploy --stack-name UserDataStaging --template-file stack-UserData.yaml --parameter-overrides KeyPairParameter=keypair-kalilinux-wm VpcIdParameter=vpc-04040c46fa235102c AmiIdParameter=ami-080e1f13689e07408 Environment=staging
+Staging-delete: 
+    aws cloudformation delete-stack --stack-name UserDataStaging
+
+base64-convert:
+    base64 script.sh -w0
+base64-Leer:
+    echo IyEvYmluL2Jhc2gKCnN1ZG8gYXB0IHVwZGF0ZQpzdWRvIGFwdCBpbnN0YWxsIG5naW54IC15CgplY2hvICdob2xhIERpb2NsZXh2aWFuJyB8IHN1ZG8gdGVlIC91c3Ivc2hhcmUvbmdpbngvaHRtbC9pbmRleC5odG1sCgo= | base64 -d
